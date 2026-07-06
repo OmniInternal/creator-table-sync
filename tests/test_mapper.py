@@ -56,7 +56,9 @@ def test_actor_row_maps_curated_columns():
             "Creator URL": {"type": "url", "url": "http://tiktok/x"},
         },
     }
+    page["url"] = "https://src.example/page-abc"
     props = build_properties(page, ACTOR, "2026-07-06")
+    assert props["Script"]["url"] == "https://src.example/page-abc"
     assert props["Name"]["title"][0]["text"]["content"] == "Gummy Ad 1"
     assert props["Status"]["select"]["name"] == "Ready For Creator"
     assert props["Creator Assigned"]["multi_select"] == [{"name": "Caleb Wood"}]

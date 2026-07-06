@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .blocks import copy_page_body
 from .config import Config, SourceConfig
 from .dedup import existing_source_ids, is_new
 from .mapper import build_properties
@@ -34,11 +35,18 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
                 continue
             try:
                 props = build_properties(page, source, copied_at_iso)
-                client.create_page(config.dest_db_id, props)
+                new_page = client.create_page(config.dest_db_id, props)
             except Exception as exc:
                 errors += 1
                 logger(f"ERROR copying {source.key} page {pid}: {exc}")
                 continue
+            # Best-effort copy of the page body (the actual script). A failure
+            # here does not fail the row — the Script link column still points
+            # to the source page.
+            try:
+                copy_page_body(client, pid, new_page["id"])
+            except Exception as exc:
+                logger(f"WARN body copy failed for {source.key} page {pid}: {exc}")
             existing.add(pid)
             created += 1
             src_created += 1

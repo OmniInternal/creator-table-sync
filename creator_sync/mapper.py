@@ -81,6 +81,12 @@ def build_properties(page: dict, source: SourceConfig, copied_at_iso: str) -> di
     if source.language_default and "Language" not in out:
         out["Language"] = {"multi_select": [{"name": source.language_default}]}
 
+    # Clickable link back to the original source row (the full script lives in
+    # its page body). This is a plain URL bookmark, not a live Notion relation,
+    # so the destination stays disconnected.
+    if page.get("url"):
+        out["Script"] = {"url": page["url"]}
+
     # Always-present housekeeping
     out["Source Tracker"] = {"select": {"name": source.label}}
     out["Copied At"] = {"date": {"start": copied_at_iso}}

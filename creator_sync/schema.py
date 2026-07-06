@@ -11,6 +11,7 @@ DEST_COLUMNS = {
     "Ready for Creator Date": "date",
     "Creator URL": "url",
     "Brief Link": "url",
+    "Script": "url",
     "Source Tracker": "select",
     "Copied At": "date",
     "Source ID": "rich_text",

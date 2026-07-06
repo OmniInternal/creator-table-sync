@@ -63,3 +63,27 @@ class NotionClient:
             "POST", "/pages",
             json={"parent": {"database_id": parent_db_id}, "properties": properties},
         )
+
+    def update_page(self, page_id: str, properties: dict) -> dict:
+        return self._request("PATCH", f"/pages/{page_id}", json={"properties": properties})
+
+    def retrieve_page(self, page_id: str) -> dict:
+        return self._request("GET", f"/pages/{page_id}")
+
+    def iter_block_children(self, block_id: str):
+        cursor = None
+        while True:
+            path = f"/blocks/{block_id}/children?page_size=100"
+            if cursor:
+                path += f"&start_cursor={cursor}"
+            data = self._request("GET", path)
+            for block in data.get("results", []):
+                yield block
+            if not data.get("has_more"):
+                return
+            cursor = data.get("next_cursor")
+
+    def append_block_children(self, block_id: str, children: list) -> dict:
+        return self._request(
+            "PATCH", f"/blocks/{block_id}/children", json={"children": children},
+        )
