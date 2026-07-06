@@ -1,6 +1,12 @@
 from __future__ import annotations
 
 import os
+import sys
+
+# Allow running as `python scripts/dry_run.py` from the repo root: ensure the
+# project root (this file's parent's parent) is importable so `creator_sync`
+# resolves without needing PYTHONPATH set.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from creator_sync.config import load_config
 from creator_sync.mapper import build_properties
