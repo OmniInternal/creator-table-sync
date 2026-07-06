@@ -7,3 +7,7 @@ Repo: megaton/creator-table-sync (new, becomes public repo)
 (base commit before Task 1: 77cd246)
 Task 1: complete (commits f2bf983..92317a2, review clean) — minors: bare dict/list type hints (cosmetic)
 Task 2: complete (commits 92317a2..d487937, review clean after fix) — fixed real-ID leak + guard self-flag; minor: allowlist endswith match (final-review triage)
+Task 3: complete (commit d487937..0f7d061, review clean) — minors: sleeps on final retry attempt, unused loop var (final-review triage)
+Task 2 follow-up: guard refined (commit ccf1cda) — targets ntn_{30,} tokens + notion workspace/page links (app subdomain + short host), allows api.notion.com; whole repo clean, 20 green
+Task 4: complete (commit 0f7d061..5116d9c, review clean) — minors: truthiness empty-check latent for numeric cols; _write_shape silent None on unknown col (final-review triage)
+Task 5: complete (commit ccf1cda..HEAD) — dedup by destination Source ID rich_text; guard clean, full suite green
