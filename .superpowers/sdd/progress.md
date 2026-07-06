@@ -5,3 +5,4 @@ Repo: megaton/creator-table-sync (new, becomes public repo)
 
 ## Ledger
 (base commit before Task 1: 77cd246)
+Task 1: complete (commits f2bf983..92317a2, review clean) — minors: bare dict/list type hints (cosmetic)
