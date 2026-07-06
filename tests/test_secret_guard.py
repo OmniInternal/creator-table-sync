@@ -4,13 +4,21 @@ def fake_reader(mapping):
     return lambda p: mapping[p]
 
 def test_flags_token():
-    reader = fake_reader({"a.py": 'x = "ntn_ABC123"'})
+    reader = fake_reader({"a.py": 'x = "ntn_' + "a" * 40 + '"'})
     v = find_violations(["a.py"], reader)
     assert v and v[0][0] == "a.py"
 
-def test_flags_notion_url():
-    reader = fake_reader({"b.md": "see https://app.notion.com/p/x"})
+def test_ignores_short_dummy_token():
+    reader = fake_reader({"a.py": 'NotionClient("ntn_x")'})
+    assert find_violations(["a.py"], reader) == []
+
+def test_flags_notion_page_url():
+    reader = fake_reader({"b.md": "https://app.notion.com/p/x"})
     assert find_violations(["b.md"], reader)
+
+def test_ignores_api_host():
+    reader = fake_reader({"b.py": 'API = "https://api.notion.com/v1"'})
+    assert find_violations(["b.py"], reader) == []
 
 def test_flags_bare_32_hex_id():
     reader = fake_reader({"c.py": "id = 0123456789abcdef0123456789abcdef"})

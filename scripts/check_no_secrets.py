@@ -5,8 +5,10 @@ import subprocess
 import sys
 from typing import Callable, Iterable
 
-TOKEN_RE = re.compile(r"ntn_[A-Za-z0-9]{6,}")
-URL_RE = re.compile(r"notion\.com")
+# Real integration tokens are ~46 chars; short dummy fixtures (ntn_x, ntn_test) are intentionally not matched.
+TOKEN_RE = re.compile(r"ntn_[A-Za-z0-9]{30,}")
+# Notion page/workspace links embed real IDs. api.notion.com (the generic API host) is NOT sensitive and is allowed.
+URL_RE = re.compile(r"(?:app\.notion\.com|notion\.so)")
 HEX32_RE = re.compile(r"\b[0-9a-fA-F]{32}\b")
 
 # Files that are allowed to mention these patterns.
