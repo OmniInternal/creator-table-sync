@@ -13,7 +13,7 @@ def test_flags_notion_url():
     assert find_violations(["b.md"], reader)
 
 def test_flags_bare_32_hex_id():
-    reader = fake_reader({"c.py": "id = 2cbb4ad216d0801d883cdd6af11ea2fc"})
+    reader = fake_reader({"c.py": "id = 0123456789abcdef0123456789abcdef"})
     assert find_violations(["c.py"], reader)
 
 def test_clean_file_passes():

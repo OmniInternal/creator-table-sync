@@ -9,8 +9,17 @@ TOKEN_RE = re.compile(r"ntn_[A-Za-z0-9]{6,}")
 URL_RE = re.compile(r"notion\.com")
 HEX32_RE = re.compile(r"\b[0-9a-fA-F]{32}\b")
 
-# Files that are allowed to mention these patterns (none by default).
-ALLOWLIST = {".env.example"}
+# Files that are allowed to mention these patterns.
+# - ".env.example": documents the expected env var shape, no real values.
+# - "scripts/check_no_secrets.py" and "tests/test_secret_guard.py": these are
+#   the guard's own detection-logic/fixture files, so they legitimately
+#   contain the literal patterns (regexes and dummy test fixtures) being
+#   searched for elsewhere in the repo.
+ALLOWLIST = {
+    ".env.example",
+    "scripts/check_no_secrets.py",
+    "tests/test_secret_guard.py",
+}
 
 
 def find_violations(paths: Iterable[str], read_text: Callable[[str], str]):
