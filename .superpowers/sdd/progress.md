@@ -16,3 +16,4 @@ Task 6: complete (commit e36762c..d082f58, review clean) — minors: bare hints;
 Task 7: complete (commit d082f58..78280b9, review clean) — copy-once + never-write-sources verified; cosmetic bare-hint minor only
 Task 8: complete (commit 78280b9..4a1029e, review clean) — no findings; 7/7 secrets via secrets.*, cron */20, guard+pytest CI
 Task 9: complete (commit 4a1029e..d8f83b9 + fix f81c486, live-validated) — dry-run against real Notion: 86 rows at trigger (inf13/act1/dr63/sp9/mic0), zero writes; fixed sys.path so documented command works
+FINAL REVIEW (opus): invariants intact (hygiene/copy-once/never-write-sources), schema<->mapper types consistent. Applied I1 blocker fix (per-row isolation + comma-safe multi_select + exact allowlist) commit 989e562. 33 tests green, live dry-run 86 rows zero writes. COMPLETE — not yet deployed (user does public repo + secrets + first run + token rotation).
