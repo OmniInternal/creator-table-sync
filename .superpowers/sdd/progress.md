@@ -13,3 +13,4 @@ Task 4: complete (commit 0f7d061..5116d9c, review clean) — minors: truthiness 
 Task 5: complete (commit ccf1cda..HEAD) — dedup by destination Source ID rich_text; guard clean, full suite green
 Task 5: complete (commit ccf1cda..e36762c, review clean) — cosmetic minor: bare set hints
 Task 6: complete (commit e36762c..d082f58, review clean) — minors: bare hints; presence-only missing check ignores type mismatch (benign, dest is fresh)
+Task 7: complete (commit d082f58..78280b9, review clean) — copy-once + never-write-sources verified; cosmetic bare-hint minor only

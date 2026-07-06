@@ -1,0 +1,31 @@
+name: sync
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: creator-sync
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run sync
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          DEST_DB_ID: ${{ secrets.DEST_DB_ID }}
+          SRC_INFLUENCER_DB_ID: ${{ secrets.SRC_INFLUENCER_DB_ID }}
+          SRC_ACTOR_TESTING_DB_ID: ${{ secrets.SRC_ACTOR_TESTING_DB_ID }}
+          SRC_DR_UGC_DB_ID: ${{ secrets.SRC_DR_UGC_DB_ID }}
+          SRC_SPANISH_DB_ID: ${{ secrets.SRC_SPANISH_DB_ID }}
+          SRC_MICRO_DB_ID: ${{ secrets.SRC_MICRO_DB_ID }}
+          TRIGGER_STATUS: "Ready For Creator"
+        run: python -m creator_sync.main
