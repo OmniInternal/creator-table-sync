@@ -11,3 +11,4 @@ Task 3: complete (commit d487937..0f7d061, review clean) — minors: sleeps on f
 Task 2 follow-up: guard refined (commit ccf1cda) — targets ntn_{30,} tokens + notion workspace/page links (app subdomain + short host), allows api.notion.com; whole repo clean, 20 green
 Task 4: complete (commit 0f7d061..5116d9c, review clean) — minors: truthiness empty-check latent for numeric cols; _write_shape silent None on unknown col (final-review triage)
 Task 5: complete (commit ccf1cda..HEAD) — dedup by destination Source ID rich_text; guard clean, full suite green
+Task 5: complete (commit ccf1cda..e36762c, review clean) — cosmetic minor: bare set hints
