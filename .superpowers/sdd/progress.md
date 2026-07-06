@@ -12,3 +12,4 @@ Task 2 follow-up: guard refined (commit ccf1cda) — targets ntn_{30,} tokens + 
 Task 4: complete (commit 0f7d061..5116d9c, review clean) — minors: truthiness empty-check latent for numeric cols; _write_shape silent None on unknown col (final-review triage)
 Task 5: complete (commit ccf1cda..HEAD) — dedup by destination Source ID rich_text; guard clean, full suite green
 Task 5: complete (commit ccf1cda..e36762c, review clean) — cosmetic minor: bare set hints
+Task 6: complete (commit e36762c..d082f58, review clean) — minors: bare hints; presence-only missing check ignores type mismatch (benign, dest is fresh)
