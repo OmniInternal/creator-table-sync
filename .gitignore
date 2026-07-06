@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .venv/
+
+# dev scaffolding (SDD ledger, task briefs, review diffs) — not for public repo
+.superpowers/
