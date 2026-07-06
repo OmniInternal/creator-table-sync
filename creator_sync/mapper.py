@@ -46,7 +46,14 @@ def _write_shape(col: str, value) -> Optional[dict]:
     if col in SELECT_COLS or col == "Source Tracker":
         return {"select": {"name": value}} if value else None
     if col in MULTI_COLS:
-        names = value if isinstance(value, list) else ([value] if value else [])
+        if isinstance(value, list):
+            names = value
+        elif isinstance(value, str):
+            names = [v.strip() for v in value.split(",")]
+        elif value:
+            names = [value]
+        else:
+            names = []
         names = [n for n in names if n]
         return {"multi_select": [{"name": n} for n in names]} if names else None
     if col in TEXT_COLS or col == "Source ID":

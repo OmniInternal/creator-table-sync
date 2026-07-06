@@ -107,6 +107,21 @@ def test_spanish_language_default_applied():
     assert props["Language"]["multi_select"] == [{"name": "Spanish"}]
 
 
+def test_creator_free_text_with_comma_splits():
+    page = {
+        "id": "p5",
+        "properties": {
+            "Creative Name": {"type": "title", "title": rt("Inf Ad 2")},
+            "Status": {"type": "status", "status": {"name": "Ready For Creator"}},
+            "Creator @": {"type": "rich_text", "rich_text": rt("@john, @jane")},
+            "Content Link": {"type": "rich_text", "rich_text": rt("link")},
+            "Product": {"type": "select", "select": {"name": "Electrolytes"}},
+        },
+    }
+    props = build_properties(page, INFLUENCER, "2026-07-06")
+    assert props["Creator Assigned"]["multi_select"] == [{"name": "@john"}, {"name": "@jane"}]
+
+
 def test_empty_values_are_omitted():
     page = {
         "id": "p4",

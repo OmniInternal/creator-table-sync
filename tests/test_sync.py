@@ -67,3 +67,21 @@ def test_sync_dedups_within_a_single_run():
     client = FakeClient(dest, {"act": [src_row("dup", "A"), src_row("dup", "A")]})
     summary = sync(make_config(), client, "2026-07-06")
     assert summary["created"] == 1
+
+
+def test_sync_isolates_a_failing_row():
+    dest = []
+    client = FakeClient(dest, {"act": [src_row("bad", "Bad"), src_row("good", "Good")]})
+
+    def failing_create_page(parent_db_id, properties):
+        if properties["Source ID"]["rich_text"][0]["text"]["content"] == "bad":
+            raise RuntimeError("boom")
+        client.created.append(properties)
+        return {"id": "new"}
+
+    client.create_page = failing_create_page
+
+    summary = sync(make_config(), client, "2026-07-06")
+    assert summary["created"] == 1
+    assert summary["errors"] == 1
+    assert client.created[0]["Source ID"]["rich_text"][0]["text"]["content"] == "good"

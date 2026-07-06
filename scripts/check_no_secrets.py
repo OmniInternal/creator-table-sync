@@ -27,7 +27,7 @@ ALLOWLIST = {
 def find_violations(paths: Iterable[str], read_text: Callable[[str], str]):
     violations = []
     for path in paths:
-        if any(path.endswith(a) for a in ALLOWLIST):
+        if path in ALLOWLIST:
             continue
         try:
             text = read_text(path)

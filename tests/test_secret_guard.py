@@ -27,3 +27,8 @@ def test_flags_bare_32_hex_id():
 def test_clean_file_passes():
     reader = fake_reader({"d.py": 'token = os.environ["NOTION_TOKEN"]'})
     assert find_violations(["d.py"], reader) == []
+
+def test_allowlist_is_exact_not_suffix():
+    reader = fake_reader({"evil/tests/test_secret_guard.py": 'x = "ntn_' + "a" * 40 + '"'})
+    v = find_violations(["evil/tests/test_secret_guard.py"], reader)
+    assert v

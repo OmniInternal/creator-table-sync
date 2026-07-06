@@ -21,6 +21,7 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
 
     created = 0
     skipped = 0
+    errors = 0
     per_source: dict = {}
 
     for source in config.sources:
@@ -31,12 +32,17 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
             if not is_new(pid, existing):
                 skipped += 1
                 continue
-            props = build_properties(page, source, copied_at_iso)
-            client.create_page(config.dest_db_id, props)
+            try:
+                props = build_properties(page, source, copied_at_iso)
+                client.create_page(config.dest_db_id, props)
+            except Exception as exc:
+                errors += 1
+                logger(f"ERROR copying {source.key} page {pid}: {exc}")
+                continue
             existing.add(pid)
             created += 1
             src_created += 1
         per_source[source.key] = src_created
         logger(f"{source.key}: created {src_created}")
 
-    return {"created": created, "skipped": skipped, "per_source": per_source}
+    return {"created": created, "skipped": skipped, "errors": errors, "per_source": per_source}
