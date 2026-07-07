@@ -28,22 +28,13 @@ def test_trigger_status_override():
 def test_sources_wired_with_ids_and_kinds():
     cfg = load_config(BASE_ENV)
     by_key = {s.key: s for s in cfg.sources}
-    assert set(by_key) == {"influencer", "actor_testing", "dr_ugc", "spanish", "micro"}
-    assert by_key["influencer"].db_id == "inf"
-    assert by_key["influencer"].status_kind == "status"
+    # Influencer Ad Tracker sync was removed 2026-07-07; four select-kind sources remain.
+    assert set(by_key) == {"actor_testing", "dr_ugc", "spanish", "micro"}
+    assert "influencer" not in by_key
+    assert by_key["actor_testing"].db_id == "act"
     assert by_key["actor_testing"].status_kind == "select"
     assert by_key["spanish"].language_default == "Spanish"
-    assert by_key["influencer"].language_default is None
-
-
-def test_influencer_field_map_uses_creator_at_and_writer():
-    cfg = load_config(BASE_ENV)
-    inf = next(s for s in cfg.sources if s.key == "influencer")
-    assert inf.field_map["Creative Name"] == "Name"
-    assert inf.field_map["Creator @"] == "Creator Assigned"
-    assert inf.field_map["Writer"] == "Scriptwriter"
-    assert inf.field_map["Brief Link"] == "Brief Link"
-    assert "Ready for Creator Date" not in inf.field_map
+    assert by_key["actor_testing"].language_default is None
 
 
 def test_actor_field_map_uses_creator_assigned_and_scriptwriter():

@@ -39,18 +39,6 @@ class Config:
     sources: list
 
 
-def _influencer_field_map() -> dict:
-    return {
-        "Creative Name": "Name",
-        "Status": "Status",
-        "Creator @": "Creator Assigned",
-        "Writer": "Scriptwriter",
-        "Content Link": "Content Link",
-        "Product": "Product",
-        "Brief Link": "Brief Link",
-    }
-
-
 def _spanish_field_map() -> dict:
     # Spanish tracker has no Scriptwriter and no Language property.
     fm = dict(_COMMON_FIELD_MAP)
@@ -65,8 +53,6 @@ def load_config(env: Mapping[str, str]) -> Config:
     trigger = env.get("TRIGGER_STATUS", DEFAULT_TRIGGER)
 
     sources = [
-        SourceConfig("influencer", "Influencer", env["SRC_INFLUENCER_DB_ID"],
-                     "status", _influencer_field_map()),
         SourceConfig("actor_testing", "Actor Testing", env["SRC_ACTOR_TESTING_DB_ID"],
                      "select", dict(_COMMON_FIELD_MAP)),
         SourceConfig("dr_ugc", "DR-UGC", env["SRC_DR_UGC_DB_ID"],

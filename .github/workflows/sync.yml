@@ -22,7 +22,6 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           DEST_DB_ID: ${{ secrets.DEST_DB_ID }}
-          SRC_INFLUENCER_DB_ID: ${{ secrets.SRC_INFLUENCER_DB_ID }}
           SRC_ACTOR_TESTING_DB_ID: ${{ secrets.SRC_ACTOR_TESTING_DB_ID }}
           SRC_DR_UGC_DB_ID: ${{ secrets.SRC_DR_UGC_DB_ID }}
           SRC_SPANISH_DB_ID: ${{ secrets.SRC_SPANISH_DB_ID }}
