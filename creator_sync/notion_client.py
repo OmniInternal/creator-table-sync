@@ -5,6 +5,7 @@ from typing import Iterator, Optional
 
 API = "https://api.notion.com/v1"
 MAX_RETRIES = 5
+REQUEST_TIMEOUT = 60  # seconds; guard against a hung Notion connection stalling the job
 
 
 class NotionClient:
@@ -23,7 +24,9 @@ class NotionClient:
     def _request(self, method: str, path: str, json: Optional[dict] = None) -> dict:
         url = f"{API}{path}"
         for attempt in range(MAX_RETRIES):
-            resp = self._session.request(method, url, headers=self.last_headers, json=json)
+            resp = self._session.request(
+                method, url, headers=self.last_headers, json=json, timeout=REQUEST_TIMEOUT
+            )
             if resp.status_code == 429 or resp.status_code >= 500:
                 wait = float(resp.headers.get("Retry-After", "1"))
                 self._sleep(wait)

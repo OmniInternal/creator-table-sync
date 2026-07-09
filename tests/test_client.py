@@ -1,4 +1,4 @@
-from creator_sync.notion_client import NotionClient
+from creator_sync.notion_client import REQUEST_TIMEOUT, NotionClient
 
 
 class FakeResp:
@@ -16,8 +16,9 @@ class FakeSession:
         self.responses = list(responses)
         self.calls = []
 
-    def request(self, method, url, headers=None, json=None):
+    def request(self, method, url, headers=None, json=None, timeout=None):
         self.calls.append((method, url, json))
+        self.last_timeout = timeout
         return self.responses.pop(0)
 
 
@@ -55,3 +56,11 @@ def test_headers_include_version_and_auth():
     # headers checked via a captured attribute
     assert client.last_headers["Authorization"] == "Bearer ntn_secret"
     assert client.last_headers["Notion-Version"] == "2022-06-28"
+
+
+def test_request_passes_timeout():
+    sess = FakeSession([FakeResp(200, {"ok": True})])
+    client = NotionClient("ntn_x", "2022-06-28", session=sess, sleep=lambda s: None)
+    client.retrieve_database("db1")
+    # a hung Notion connection must not stall the job: request carries a timeout
+    assert sess.last_timeout == REQUEST_TIMEOUT

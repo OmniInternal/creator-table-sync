@@ -28,3 +28,15 @@ jobs:
           SRC_MICRO_DB_ID: ${{ secrets.SRC_MICRO_DB_ID }}
           TRIGGER_STATUS: "Ready For Creator"
         run: python -m creator_sync.main
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL not set; skipping Slack notification"
+            exit 0
+          fi
+          export TEXT="creator-table-sync FAILED — run ${GITHUB_RUN_ID} on ${GITHUB_REF_NAME}: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          payload=$(python -c 'import json,os;print(json.dumps({"text":os.environ["TEXT"]}))')
+          curl -sf -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
