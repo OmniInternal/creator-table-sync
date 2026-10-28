@@ -3,13 +3,33 @@ from __future__ import annotations
 from .blocks import copy_page_body
 from .config import Config, SourceConfig
 from .dedup import existing_source_ids, is_new
-from .mapper import build_properties
+from .mapper import build_properties, resolve_source_column
 from .schema import ensure_schema
 
 
 def status_filter(source: SourceConfig, trigger: str) -> dict:
     kind = "status" if source.status_kind == "status" else "select"
     return {"property": "Status", kind: {"equals": trigger}}
+
+
+# Destination columns a copy is worthless without. A source whose schema can no
+# longer supply one is a DRIFT, not a quiet empty column: the source is skipped
+# and the run fails (Slack alert), instead of minting rows the coordinator cannot
+# use. Name always resolves (the title property).
+CORE_COLUMNS = ("Name", "Creator Assigned")
+
+
+def source_drift(source: SourceConfig, schema_props: dict) -> list:
+    """Core destination columns this source's CURRENT schema cannot fill."""
+    missing = []
+    for src_name, dest_col in source.field_map.items():
+        if dest_col in CORE_COLUMNS and resolve_source_column(schema_props, src_name, dest_col) is None:
+            missing.append(f"{dest_col} (from {src_name})")
+    return missing
+
+
+class DriftError(RuntimeError):
+    pass
 
 
 def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
@@ -25,8 +45,15 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
     errors = 0
     per_source: dict = {}
 
+    drifted: dict = {}
     for source in config.sources:
         src_created = 0
+        missing = source_drift(source, client.retrieve_database(source.db_id).get("properties", {}))
+        if missing:
+            drifted[source.key] = missing
+            logger(f"DRIFT {source.key}: source schema can no longer fill {missing} — source SKIPPED, fix the field map")
+            per_source[source.key] = 0
+            continue
         flt = status_filter(source, config.trigger_status)
         for page in client.iter_query(source.db_id, flt):
             pid = page["id"]
@@ -35,6 +62,8 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
                 continue
             try:
                 props = build_properties(page, source, copied_at_iso)
+                if "Name" not in props:
+                    raise ValueError("source row has an empty title — not copying a nameless row")
                 new_page = client.create_page(config.dest_db_id, props)
             except Exception as exc:
                 errors += 1
@@ -53,4 +82,7 @@ def sync(config: Config, client, copied_at_iso: str, logger=print) -> dict:
         per_source[source.key] = src_created
         logger(f"{source.key}: created {src_created}")
 
-    return {"created": created, "skipped": skipped, "errors": errors, "per_source": per_source}
+    summary = {"created": created, "skipped": skipped, "errors": errors, "per_source": per_source, "drifted": drifted}
+    if drifted:
+        raise DriftError(f"schema drift, sources skipped: {drifted}; summary {summary}")
+    return summary

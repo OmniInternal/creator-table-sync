@@ -65,14 +65,38 @@ def _write_shape(col: str, value) -> Optional[dict]:
     return None
 
 
+# Source columns get RENAMED in Notion (DR-UGC 2026-10: `Creative Name` → `Title`,
+# `Creator Assigned` → `Creator` → `Style/Creator`; Spanish: `Creator / Style`).
+# A renamed column used to be skipped SILENTLY — the copy arrived with no name or
+# creator. Each configured source column now also answers to its known aliases,
+# and the destination `Name` always falls back to the page's TITLE property,
+# whatever it is called (every Notion database has exactly one).
+SOURCE_ALIASES = {
+    "Creator Assigned": ["Style/Creator", "Creator / Style", "Creator"],
+}
+
+
+def resolve_source_column(props: dict, src_name: str, dest_col: str) -> Optional[str]:
+    """The source property that holds `src_name` today, or None."""
+    for name in [src_name, *SOURCE_ALIASES.get(src_name, [])]:
+        if name in props:
+            return name
+    if dest_col == "Name":
+        for name, prop in props.items():
+            if prop.get("type") == "title":
+                return name
+    return None
+
+
 def build_properties(page: dict, source: SourceConfig, copied_at_iso: str) -> dict:
     props = page.get("properties", {})
     out: dict = {}
 
     for src_name, dest_col in source.field_map.items():
-        if src_name not in props:
+        col = resolve_source_column(props, src_name, dest_col)
+        if col is None:
             continue
-        value = _read_source_value(props[src_name])
+        value = _read_source_value(props[col])
         shape = _write_shape(dest_col, value)
         if shape is not None:
             out[dest_col] = shape
